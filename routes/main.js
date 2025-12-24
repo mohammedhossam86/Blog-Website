@@ -1,6 +1,7 @@
 const router = require('express').Router();
-const { mainRouter, aboutrouter } = require('../controllers/main');
+const { mainRouter, aboutRouter ,searchRouter } = require('../controllers/main');
 
 router.get('/' , mainRouter);
-router.get('/about' , aboutrouter);
+router.get('/about' , aboutRouter);
+router.post('/search' , searchRouter);
 module.exports = router;

@@ -1,4 +1,6 @@
 const Post = require('../models/posts');
+const adminLadyout = '../views/layouts/admin';
+
 const mainRouter = async (req, res) => {
     try {
         const locals = {
@@ -31,7 +33,6 @@ const mainRouter = async (req, res) => {
     }
 };
 
-
 const aboutRouter = async (req, res) => {
     const locals = {
             title: 'About Page',
@@ -63,4 +64,111 @@ const searchRouter = async (req, res) => {
         console.log(error);
     }
 }
-module.exports = { mainRouter, aboutRouter, searchRouter };
+
+const singlePost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        const locals = {
+            title: post.title,
+        }
+        res.render('posts', { locals, post });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const getaddPostRouter = async (req, res) => {
+    try {
+        const locals = {
+            title: 'Add Post',
+            layout: adminLayout
+        };
+        res.render('admin/add-post', { locals, layout: adminLadyout  });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const addPostRouter = async (req, res) => {
+    try {
+        const locals = {
+            title: 'Add Post'
+        };
+        const { title, body } = req.body;
+        await Post.create({ title, body });
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const dashboard = async (req, res) => { 
+    try {
+    const locals = {
+        title: 'Dashboard'
+    };
+    const posts = await Post.find({}).sort({ updatedAt: -1 });
+    res.render('admin/dashboard', { locals, posts, layout: adminLadyout });
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const geteditPostRouter = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        res.render('admin/edit-post', { post , layout: adminLadyout});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const editPostRouter = async (req, res) => {
+    try {
+
+        await Post.findByIdAndUpdate(req.params.id, {
+        title: req.body.title,
+        body: req.body.body,
+        updatedAt: Date.now()
+        });
+
+        res.redirect('/dashboard');
+
+  } catch (error) {
+        console.log(error);
+  } 
+
+};
+
+const deletePostRouter = async (req, res) => {
+    try {
+        await Post.deleteOne({ _id: req.params.id });
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const logout = (req, res) => {
+    res.clearCookie('token');
+    res.redirect('/');
+};
+
+module.exports = {
+    mainRouter,
+    aboutRouter,
+    searchRouter,
+    singlePost,
+    dashboard,
+    editPostRouter,
+    deletePostRouter,
+    geteditPostRouter,
+    getaddPostRouter,
+    addPostRouter,
+    logout
+};

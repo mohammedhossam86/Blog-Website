@@ -81,8 +81,7 @@ const singlePost = async (req, res) => {
 const getaddPostRouter = async (req, res) => {
     try {
         const locals = {
-            title: 'Add Post',
-            layout: adminLayout
+            title: 'Add Post'
         };
         res.render('admin/add-post', { locals, layout: adminLadyout  });
     } catch (error) {

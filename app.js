@@ -7,23 +7,14 @@ const adminRouter = require('./routes/admin');
 const app = express();
 require('dotenv').config();
 const connectDB = require('./config/dp');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const mongoStore = require('connect-mongo');
-
+const cookieParser = require("cookie-parser");
 connectDB();
 
 const port = 3000;
+app.use(cookieParser()); 
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser());
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    store: mongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-}));
 
 
 app.use(express.static('public'));
